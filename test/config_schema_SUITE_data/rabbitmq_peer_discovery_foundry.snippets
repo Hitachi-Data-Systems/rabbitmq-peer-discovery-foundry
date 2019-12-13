@@ -1,0 +1,51 @@
+[
+  {foundry_host, "cluster_formation.foundry.host = foundry.eng.megacorp.local", [
+          {rabbit, [
+              {cluster_formation, [
+                  {peer_discovery_foundry, [
+                      {foundry_host, "foundry.eng.megacorp.local"}
+                  ]}
+              ]}
+          ]}
+      ], [rabbitmq_peer_discovery_foundry]
+  }
+
+, {foundry_port,
+   "cluster_formation.foundry.port = 9700",
+   [{rabbit, [{cluster_formation, [
+                                   {peer_discovery_foundry, [
+                                                            {foundry_port, 9700}
+                                                           ]}
+                                  ]}]}],
+   [rabbitmq_peer_discovery_foundry]}
+
+, {foundry_host_and_port,
+   "cluster_formation.foundry.host = foundry.eng.megacorp.local
+   cluster_formation.foundry.port = 443",
+  [{rabbit, [{cluster_formation, [
+                                  {peer_discovery_foundry, [
+                                                           {foundry_host, "foundry.eng.megacorp.local"},
+                                                           {foundry_port, 443}
+                                                          ]}
+                                 ]}]}],
+   [rabbitmq_peer_discovery_foundry]}
+
+
+, {foundry_scheme,
+   "cluster_formation.foundry.scheme = https",
+   [{rabbit, [{cluster_formation, [
+                                   {peer_discovery_foundry, [
+                                                            {foundry_scheme, "https"}
+                                                           ]}
+                                  ]}]}],
+   [rabbitmq_peer_discovery_foundry]}
+
+, {foundry_plugin,
+   "cluster_formation.foundry.plugin = com.hitachi.aspen.foundry.service.rabbitmq.server",
+   [{rabbit, [{cluster_formation, [
+                                   {peer_discovery_foundry, [
+                                                            {foundry_plugin, "com.hitachi.aspen.foundry.service.rabbitmq.server"}
+                                                           ]}
+                                  ]}]}],
+   [rabbitmq_peer_discovery_foundry]}
+].

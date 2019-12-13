@@ -1,0 +1,56 @@
+%% Foundry host
+
+{mapping, "cluster_formation.foundry.host", "rabbit.cluster_formation.peer_discovery_foundry.foundry_host", [
+    {datatype, string}
+]}.
+
+{translation, "rabbit.cluster_formation.peer_discovery_foundry.foundry_host",
+fun(Conf) ->
+    case cuttlefish:conf_get("cluster_formation.foundry.host", Conf, undefined) of
+        undefined -> cuttlefish:unset();
+        Value     -> Value
+    end
+end}.
+
+%% Foundry port
+
+{mapping, "cluster_formation.foundry.port", "rabbit.cluster_formation.peer_discovery_foundry.foundry_port", [
+    {datatype, integer},
+    {validators, ["non_negative_integer"]}
+]}.
+
+{translation, "rabbit.cluster_formation.peer_discovery_foundry.foundry_port",
+fun(Conf) ->
+    case cuttlefish:conf_get("cluster_formation.foundry.port", Conf, undefined) of
+        undefined -> cuttlefish:unset();
+        Value     -> Value
+    end
+end}.
+
+%% Foundry URI scheme
+
+{mapping, "cluster_formation.foundry.scheme", "rabbit.cluster_formation.peer_discovery_foundry.foundry_scheme", [
+    {datatype, string}
+]}.
+
+{translation, "rabbit.cluster_formation.peer_discovery_foundry.foundry_scheme",
+fun(Conf) ->
+    case cuttlefish:conf_get("cluster_formation.foundry.scheme", Conf, undefined) of
+        undefined -> cuttlefish:unset();
+        Value     -> Value
+    end
+end}.
+
+%% Foundry plugin
+
+{mapping, "cluster_formation.foundry.plugin", "rabbit.cluster_formation.peer_discovery_foundry.foundry_plugin", [
+    {datatype, string}
+]}.
+
+{translation, "rabbit.cluster_formation.peer_discovery_foundry.foundry_plugin",
+fun(Conf) ->
+    case cuttlefish:conf_get("cluster_formation.foundry.plugin", Conf, undefined) of
+        undefined -> cuttlefish:unset();
+        Value     -> Value
+    end
+end}.
