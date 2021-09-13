@@ -49,17 +49,31 @@ init() ->
     application:load(rabbitmq_peer_discovery_common),
     rabbit_peer_discovery_httpc:maybe_configure_proxy().
 
--spec list_nodes() -> {ok, {Nodes :: list(), NodeType :: rabbit_types:node_type()}}.
+-spec list_nodes() -> {ok, {Nodes :: list(), NodeType :: rabbit_types:node_type()}} | {error, Reason :: string()}.
 
 list_nodes() ->
+    M = ?CONFIG_MODULE:config_map(?BACKEND_CONFIG_KEY),
+    list_nodes_with_retry(get_config_key(foundry_retry_interval_ms, M)).
+
+-spec list_nodes_with_retry(non_neg_integer()) -> {ok, {Nodes :: list(), NodeType :: rabbit_types:node_type()}}.
+
+list_nodes_with_retry(Interval) ->
     %% List all of the foundry services
     case make_services_request() of
 	{ok, ServiceResponse} ->
             %% Find all of the rabbitmq instance uuids
             rabbit_log:debug("ServiceResponse - ~s", [ServiceResponse]),
-	    InstanceUuids = extract_instance_uuids(ServiceResponse),
+	        InstanceUuids = extract_instance_uuids(ServiceResponse),
 
-            rabbit_log:info("Instances - ~s", [InstanceUuids]),
+
+            %% empty list is treated as invalid
+            if length(InstanceUuids) < 1 ->
+                rabbit_log:info("Got empty list of instance UUIDs, retrying after ~b ms", [Interval]),
+                timer:sleep(Interval),
+                list_nodes_with_retry(Interval);
+            true ->
+                rabbit_log:info("Instances - ~s", [InstanceUuids])
+            end,
 
             %% List all of the foundry instances (nodes)
             case make_instances_request() of
@@ -67,17 +81,31 @@ list_nodes() ->
                     %% Get the instance IP address for all of the rabbitmq instances
                     rabbit_log:debug("Instance Response - ~s", [InstanceResponse]),
                     Addresses = extract_instance_ips(InstanceResponse, InstanceUuids),
-                    rabbit_log:info("Addresses - ~s", [Addresses]),
+
+                    %% empty list is treated as invalid
+                    if length(Addresses) < 1 ->
+                        rabbit_log:info("Got empty list of addresses, retrying after ~b ms", [Interval]),
+                        timer:sleep(Interval),
+                        list_nodes_with_retry(Interval);
+                    true ->
+                        rabbit_log:info("Addresses - ~s", [Addresses])
+                    end,
                     {ok, lists:map(fun node_name/1, Addresses)};
                 {error, Reason} ->
                     rabbit_log:info(
-                      "Failed to get instances from foundry - ~s", [Reason]),
-                    {error, Reason}
+                      "Failed to get instances from foundry - ~s, retrying after ~b ms", [Reason, Interval]),
+                    timer:sleep(Interval),
+
+                    %% keep looping until we get an ok
+                    list_nodes_with_retry(Interval)
             end;
 	{error, Reason} ->
 	    rabbit_log:info(
-	      "Failed to get services from foundry - ~s", [Reason]),
-	    {error, Reason}
+	      "Failed to get services from foundry - ~s, retrying after ~b ms", [Reason, Interval]),
+        timer:sleep(Interval),
+
+        %% keep looping until we get an ok
+        list_nodes_with_retry(Interval)
     end.
 
 -spec supports_registration() -> boolean().

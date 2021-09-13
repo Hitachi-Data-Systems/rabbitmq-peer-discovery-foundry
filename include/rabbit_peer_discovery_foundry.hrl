@@ -26,5 +26,10 @@
                                                    type          = string,
                                                    env_variable  = "FOUNDRY_PEER_DISCOVER_PLUGINNAME",
                                                    default_value = "com.hitachi.aspen.foundry.service.rabbitmq.server"
+                                                  },
+          foundry_retry_interval_ms               => #peer_discovery_config_entry_meta{
+                                                   type          = integer,
+                                                   env_variable  = "FOUNDRY_PEER_DISCOVERY_RETRY_INTERVAL_MS",
+                                                   default_value = 3000
                                                   }
          }).
