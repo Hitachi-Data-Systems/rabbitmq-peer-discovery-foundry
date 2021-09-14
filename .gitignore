@@ -18,3 +18,9 @@
 /xrefr
 
 /rabbitmq_peer_discovery_foundry.d
+
+/escript.lock
+/escript/
+/plugins.lock
+/sbin.lock
+/sbin/
