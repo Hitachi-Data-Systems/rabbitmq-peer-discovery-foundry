@@ -66,6 +66,9 @@ An example based on Fedora-30:
 
     RUN apk update && apk add bash gawk curl git make automake python2\
      rsync zip pcre2 libxslt erlang erlang-dev elixir
+
+See the docker-build folder in the repository for more information.
+
 # Notes
 If experiencing any encoding errors as part of the build, try explicitly setting UTF-8 environment variables when running the docker build image:
 
